@@ -9,7 +9,7 @@ GNL_OBJS := $(GNL_SRC:%.c=%.o)
 PRINTF_OBJS := $(PRINTF_SRC:%.c=%.o)
 
 CC = gcc
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g -g3
 
 all: $(NAME)
 
