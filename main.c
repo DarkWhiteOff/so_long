@@ -87,7 +87,7 @@ size_t  ft_strlenmap(char *line)
         int     i;
 
         i = 0;
-        while (line[i] && line[i] != '\n')
+        while (line[i] != '\n' && line[i] != '\0')
                 i++;
         return (i);
 }
@@ -97,20 +97,28 @@ void    parse_map(t_map *map, t_pxy *p_pos)
         int     fd;
         char    *line;
         int     line_samelen;
-
+	int i = 0;
+	
+	line_samelen = 0;
         fd = open(map->path, O_RDONLY);
         line = get_next_line(fd);
-        map->width = ft_strlenmap(line);
-        while (line != NULL)
+	if (line[0] == '\n' || line[0] == '\0')
+		exit (ft_printf("Your map has one or more empty lines.\n"));
+	map->width = ft_strlenmap(line);
+        while (line)
         {
                 if (ft_strlenmap(line) != map->width)
                         line_samelen = 1;
                 map->height++;
+		if (line[0] == '\n' || line[0] == '\0')
+			exit (ft_printf("Your map has one or more empty lines.\n"));
                 line = get_next_line(fd);
+		i++;
         }
         close(fd);
-        ft_printf("map width : %d\n", map->width); // à enlever
-        ft_printf("map height : %d\n\n", map->height); // à enlever
+	free(line);
+//      ft_printf("map width : %d\n", map->width); // à enlever
+//      ft_printf("map height : %d\n\n", map->height); // à enlever
         if (map->width == map->height || map->width == 0 || map->height == 0 || line_samelen == 1)
                exit (ft_printf("Your map is not rectangular or there's nothing in it.\n"));
 }
@@ -142,7 +150,7 @@ void    allocate_grids(t_map *map)
                 i++;
                 j = 0;
         }
-        map->highlight_grid[i] = NULL;
+        //map->highlight_grid[i] = NULL;
 }
 
 void    grid_init(t_main *main)
@@ -173,7 +181,7 @@ void    grid_init(t_main *main)
                 i++;
                 j = 0;                                                                                                                               line = get_next_line(main->map.fd);
         }
-        main->map.grid[i] = NULL;
+        //main->map.grid[i] = NULL;
         close(main->map.fd);
 }
 
@@ -238,9 +246,9 @@ void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
                 j = 0;
                 i++;
         }
-        ft_printf("map Exits : %d\n", map->Ex); // à enlever
-        ft_printf("map Positions : %d\n", map->Pos); // à enlever
-        ft_printf("map Collectibles : %d\n\n", map->Coll); // à enlever
+//      ft_printf("map Exits : %d\n", map->Ex); // à enlever
+//      ft_printf("map Positions : %d\n", map->Pos); // à enlever
+//      ft_printf("map Collectibles : %d\n\n", map->Coll); // à enlever
         if (map->Ex != 1 || map->Pos != 1 || map->Coll < 1)                                                                                          exit (ft_printf("Verify that there are only one Exit, one Position and at least one Collectible!\n"));
 }
 
@@ -265,7 +273,7 @@ void	free_what_to_free(t_main *main)
 	int	i;
 
 	i = 0;
-	while (main->map.highlight_grid[i] != NULL)
+	while (i < main->map.height)
 	{
 		free(main->map.highlight_grid[i]);
 		i++;
@@ -368,7 +376,7 @@ void    free_rest(t_main *main)
         int     i;
 
         i = 0;
-        while (main->map.grid[i] != NULL)
+        while (i < main->map.height)
         {
                 free(main->map.grid[i]);
                 i++;
@@ -383,7 +391,7 @@ void	put_background(t_main *main)
 	int	px_w = 0;
 	int	px_h = 0;
 	
-	while (main->map.grid[i] != NULL)
+	while (i < main->map.height)
 	{
         	while (main->map.grid[i][j] != '\0')
         	{
@@ -435,8 +443,8 @@ int	main(int argc, char *argv[])
 	check_path(&main.map, main.p_pos.x, main.p_pos.y);
 	main.map.grid[main.e_pos.y][main.e_pos.x] = '0';
 	free_what_to_free(&main);
-	ft_printf("exit found : %d\n", main.map.exit_acc); // à enlever
-	ft_printf("collectibles found : %d\n", main.map.coll_acc); // à enlever
+//	ft_printf("exit found : %d\n", main.map.exit_acc); // à enlever
+//	ft_printf("collectibles found : %d\n", main.map.coll_acc); // à enlever
 	if (main.map.exit_acc != 1 || main.map.coll_acc != main.map.Coll)
 		return (ft_printf("Your map is invalid because the exit or collectibles aren't accessible.\n"));
 	main.mlx_ptr = mlx_init();
