@@ -55,6 +55,9 @@ typedef struct s_main {
 	t_sprite	spr_you_win;
 }	t_main;
 
+void    free_what_to_free(t_map *map);
+void    free_rest(t_map *map);
+
 int     check_map_name(char *map_name)
 {
         int     i;
@@ -101,9 +104,11 @@ void    parse_map(t_map *map, t_pxy *p_pos)
 	
 	line_samelen = 0;
         fd = open(map->path, O_RDONLY);
+	if (fd < 0 || read(fd, 0, 0) < 0)
+		exit (ft_printf("Error\nfd not working."));
         line = get_next_line(fd);
 	if (line[0] == '\n' || line[0] == '\0')
-		exit (ft_printf("Your map has one or more empty lines.\n"));
+		exit (ft_printf("Error\nYour map has one or more empty lines.\n"));
 	map->width = ft_strlenmap(line);
         while (line)
         {
@@ -111,7 +116,7 @@ void    parse_map(t_map *map, t_pxy *p_pos)
                         line_samelen = 1;
                 map->height++;
 		if (line[0] == '\n' || line[0] == '\0')
-			exit (ft_printf("Your map has one or more empty lines.\n"));
+			exit (ft_printf("Error\nYour map has one or more empty lines.\n"));
                 line = get_next_line(fd);
 		i++;
         }
@@ -120,7 +125,7 @@ void    parse_map(t_map *map, t_pxy *p_pos)
 //      ft_printf("map width : %d\n", map->width); // à enlever
 //      ft_printf("map height : %d\n\n", map->height); // à enlever
         if (map->width == map->height || map->width == 0 || map->height == 0 || line_samelen == 1)
-               exit (ft_printf("Your map is not rectangular or there's nothing in it.\n"));
+               exit (ft_printf("Error\nYour map is not rectangular or there's nothing in it.\n"));
 }
 
 void    allocate_grids(t_map *map)
@@ -163,6 +168,8 @@ void    grid_init(t_main *main)
         j = 0;
 
         main->map.fd = open(main->map.path, O_RDONLY);
+	if (main->map.fd < 0 || read(main->map.fd, 0, 0) < 0)
+		exit (ft_printf("Error\nfd not working."));
         line = get_next_line(main->map.fd);
         allocate_grids(&main->map);
         while (i < main->map.height)
@@ -179,7 +186,8 @@ void    grid_init(t_main *main)
                 }
                 main->map.grid[i][j] = '\0';
                 i++;
-                j = 0;                                                                                                                               line = get_next_line(main->map.fd);
+                j = 0;
+		line = get_next_line(main->map.fd);
         }
         //main->map.grid[i] = NULL;
         close(main->map.fd);
@@ -193,14 +201,22 @@ void    check_walls1(t_map *map)
         while (i < map->width)
         {
                 if (map->grid[0][i] != '1')
-                        exit (ft_printf("Your map is not fully enclosed !\n"));
+		{
+			free_what_to_free(map);
+			free_rest(map);
+                        exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
+		}
                 i++;
         }
         i = 0;
         while (i < map->width)
         {
                 if (map->grid[map->height - 1][i] != '1')
-                        exit (ft_printf("Your map is not fully enclosed !\n"));
+		{
+			free_what_to_free(map);
+			free_rest(map);
+                        exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
+		}
                 i++;
         }
 }
@@ -213,9 +229,17 @@ void    check_walls2(t_map *map)
         while (i < map->height - 1)
         {
                 if (map->grid[i][0] != '1')
-                        exit (ft_printf("Your map is not fully enclosed !\n"));
+		{
+			free_what_to_free(map);
+			free_rest(map);
+                        exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
+		}
                 if (map->grid[i][map->width - 1] != '1')
-                        exit (ft_printf("Your map is not fully enclosed !\n"));
+		{
+			free_what_to_free(map);
+			free_rest(map);
+                        exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
+		}
                 i++;
         }
 }
@@ -241,6 +265,8 @@ void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
                         }
                         if (map->grid[i][j] == 'C')
                                 map->Coll++;
+			if (map->grid[i][j] != 'E' && map->grid[i][j] != 'P' && map->grid[i][j] != 'C' && map->grid[i][j] != '0' && map->grid[i][j] != '1')
+					exit (ft_printf("Error\nYour map contains an unrecognized character."));
                         j++;
                 }
                 j = 0;
@@ -249,7 +275,12 @@ void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
 //      ft_printf("map Exits : %d\n", map->Ex); // à enlever
 //      ft_printf("map Positions : %d\n", map->Pos); // à enlever
 //      ft_printf("map Collectibles : %d\n\n", map->Coll); // à enlever
-        if (map->Ex != 1 || map->Pos != 1 || map->Coll < 1)                                                                                          exit (ft_printf("Verify that there are only one Exit, one Position and at least one Collectible!\n"));
+        if (map->Ex != 1 || map->Pos != 1 || map->Coll < 1)
+	{
+		free_what_to_free(map);
+		free_rest(map);
+		exit (ft_printf("Error\nVerify that there are only one Exit, one Position and at least one Collectible!\n"));
+	}
 }
 
 void    check_path(t_map *map, size_t x, size_t y)
@@ -268,17 +299,17 @@ void    check_path(t_map *map, size_t x, size_t y)
         return ;
 }
 
-void	free_what_to_free(t_main *main)
+void	free_what_to_free(t_map *map)
 {
 	int	i;
 
 	i = 0;
-	while (i < main->map.height)
+	while (i < map->height)
 	{
-		free(main->map.highlight_grid[i]);
+		free(map->highlight_grid[i]);
 		i++;
 	}
-	free(main->map.highlight_grid);
+	free(map->highlight_grid);
 }
 
 void	sprites_init(t_main *main)
@@ -371,17 +402,17 @@ int     key_manager(int keycode, t_main *main)
         return (0);
 }
 
-void    free_rest(t_main *main)
+void    free_rest(t_map *map)
 {
         int     i;
 
         i = 0;
-        while (i < main->map.height)
+        while (i < map->height)
         {
-                free(main->map.grid[i]);
+                free(map->grid[i]);
                 i++;
         }
-        free(main->map.grid);
+        free(map->grid);
 }
 
 void	put_background(t_main *main)
@@ -407,7 +438,7 @@ void	put_background(t_main *main)
 				mlx_put_image_to_window(main->mlx_ptr, main->mlx_win, main->spr_door_close.img, px_w, px_h);
 			if (main->map.player_on_exit == 1)
 			{
-				free_rest(main);
+				free_rest(&main->map);
 				exit (ft_printf("YOU WON THE GAME GG !!!\n"));
 			}
 			j++;
@@ -431,9 +462,9 @@ int	main(int argc, char *argv[])
 	t_main main;
 
 	if (argc != 2)
-		return (ft_printf("No map file was entered or to much files were entered.\n"));
+		return (ft_printf("Error\nNo map file was entered or to much files were entered.\n"));
 	if (check_map_name(argv[1]) == 1)
-		return (ft_printf("Map name is incorrect.\n"));
+		return (ft_printf("Error\nMap name is incorrect.\n"));
 	vars_init(&main.map, argv[1]);
 	parse_map(&main.map, &main.p_pos);
 	grid_init(&main);
@@ -442,11 +473,14 @@ int	main(int argc, char *argv[])
 	check_epc(&main.map, &main.p_pos, &main.e_pos);
 	check_path(&main.map, main.p_pos.x, main.p_pos.y);
 	main.map.grid[main.e_pos.y][main.e_pos.x] = '0';
-	free_what_to_free(&main);
+	free_what_to_free(&main.map);
 //	ft_printf("exit found : %d\n", main.map.exit_acc); // à enlever
 //	ft_printf("collectibles found : %d\n", main.map.coll_acc); // à enlever
 	if (main.map.exit_acc != 1 || main.map.coll_acc != main.map.Coll)
-		return (ft_printf("Your map is invalid because the exit or collectibles aren't accessible.\n"));
+	{
+		free_rest(&main.map);
+		return (ft_printf("Error\nYour map is invalid because the exit or collectibles aren't accessible.\n"));
+	}
 	main.mlx_ptr = mlx_init();
 	main.mlx_win = mlx_new_window(main.mlx_ptr, main.map.width * 48, main.map.height * 50, "so_long");
 	main.img = mlx_new_image(main.mlx_ptr, main.map.width * 48, main.map.height * 50);
