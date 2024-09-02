@@ -150,6 +150,7 @@ void    parse_map(t_map *map, t_pxy *p_pos)
 	if (line[0] == '\n' || line[0] == '\0')
 	{
 		free(line); // pas test
+		close(fd);
 		exit (ft_printf("Error\nYour map has one or more empty lines.\n"));
 	}
 	map->width = ft_strlenmap(line);
@@ -158,17 +159,17 @@ void    parse_map(t_map *map, t_pxy *p_pos)
                 if (ft_strlenmap(line) != map->width || ft_strlenmap(line) > 53)
                         line_samelen = 1;
                 map->height++;
-		if (line[0] == '\n' || line[0] == '\0')
-		{
+				if (line[0] == '\n' || line[0] == '\0')
+				{
+					free(line);
+					close(fd);
+					exit (ft_printf("Error\nYour map has one or more empty lines.\n"));
+				}
 			free(line);
-			exit (ft_printf("Error\nYour map has one or more empty lines.\n"));
-		}
-		free(line);
-        line = get_next_line(fd);
-		i++;
+     		line = get_next_line(fd);
+			i++;
         }
         close(fd);
-		free (line);
 		
 //      ft_printf("map width : %d\n", map->width); // à enlever
 //      ft_printf("map height : %d\n\n", map->height); // à enlever
@@ -481,8 +482,8 @@ int	main(int argc, char *argv[])
 		return (ft_printf("Error\nMap name is incorrect.\n"));
 	vars_init(&main.map, argv[1]);
 	parse_map(&main.map, &main.p_pos);
-	//return (0);
 	grid_init(&main);
+	return (0);
 	check_walls1(&main.map);
 	check_walls2(&main.map);
 	check_epc(&main.map, &main.p_pos, &main.e_pos);
