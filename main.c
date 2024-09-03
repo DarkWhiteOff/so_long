@@ -90,6 +90,21 @@ void    free_rest(t_map *map)
         free(map->grid);
 } */
 
+void	free_grids(t_map map)
+{
+	int i;
+
+	i = 0;
+	while (i < map.height)
+        {
+                free(map.grid[i]);
+				free(map.highlight_grid[i]);
+                i++;
+        }
+		free(map.grid);
+		free(map.highlight_grid);
+}
+
 int     check_map_name(char *map_name)
 {
         int     i;
@@ -169,6 +184,7 @@ void    parse_map(t_map *map, t_pxy *p_pos)
      		line = get_next_line(fd);
 			i++;
         }
+		//free (line);
         close(fd);
 		
 //      ft_printf("map width : %d\n", map->width); // à enlever
@@ -217,8 +233,11 @@ void    grid_init(t_main *main)
         j = 0;
 
         main->map.fd = open(main->map.path, O_RDONLY);
-	if (main->map.fd < 0 || read(main->map.fd, 0, 0) < 0)
-		exit (ft_printf("Error\nfd not working."));
+		if (main->map.fd < 0 || read(main->map.fd, 0, 0) < 0)
+		{
+			close(main->map.fd);
+			exit (ft_printf("Error\nfd not working."));
+		}
         line = get_next_line(main->map.fd);
         allocate_grids(&main->map);
         while (i < main->map.height)
@@ -236,8 +255,10 @@ void    grid_init(t_main *main)
                 main->map.grid[i][j] = '\0';
                 i++;
                 j = 0;
+				free(line);
 		line = get_next_line(main->map.fd);
         }
+		//free (line);
         //main->map.grid[i] = NULL;
         close(main->map.fd);
 }
@@ -352,7 +373,7 @@ void	sprites_init(t_main *main)
 	if (!main->spr_player_front.img || !main->spr_wall.img || !main->spr_floor.img || !main->spr_floor_coll.img || !main->spr_coll2.img || !main->spr_door_close.img)
 	{
 		ft_printf("Error : FAILED");
-		close_window(main);
+		mlx_destroy_window(main->mlx_ptr, main->mlx_win);
 	}
 }
 
@@ -410,23 +431,33 @@ void	update_player_pos(t_main *main, char c)
 
 int     key_manager(int keycode, t_main *main)
 {
+	static int	movements = 0;
+
         if (keycode == 53 || keycode == 65307)
                 close_window(main);
 	if (keycode == 122 || keycode == 65362) // Z
 	{
 		update_player_pos(main, 'Z');
+		movements += 1;
+		ft_printf("Movements : %d\n", movements);
 	}
 	if (keycode == 113 || keycode == 65361) // Q
 	{
 		update_player_pos(main, 'Q');
+		movements += 1;
+		ft_printf("Movements : %d\n", movements);
 	}
 	if (keycode == 115 || keycode == 65364) // S
 	{
 		update_player_pos(main, 'S');
+		movements += 1;
+		ft_printf("Movements : %d\n", movements);
 	}
 	if (keycode == 100 || keycode == 65363) // D
 	{
 		update_player_pos(main, 'D');
+		movements += 1;
+		ft_printf("Movements : %d\n", movements);
 	}
         return (0);
 }
@@ -454,6 +485,14 @@ void	put_background(t_main *main)
 				mlx_put_image_to_window(main->mlx_ptr, main->mlx_win, main->spr_door_close.img, px_w, px_h);
 			if (main->map.player_on_exit == 1)
 			{
+				free_grids(main->map);
+				/* mlx_destroy_window(main->mlx_ptr, main->mlx_win);
+	mlx_destroy_image(main->mlx_ptr, main->spr_wall.img);
+	mlx_destroy_image(main->mlx_ptr, main->spr_floor.img);
+	mlx_destroy_image(main->mlx_ptr, main->spr_floor_coll.img);
+	mlx_destroy_image(main->mlx_ptr, main->spr_coll2.img);
+	mlx_destroy_image(main->mlx_ptr, main->spr_door_close.img);
+	mlx_destroy_image(main->mlx_ptr, main->spr_player_front.img); */
 				exit (ft_printf("YOU WON THE GAME GG !!!\n"));
 			}
 			j++;
@@ -483,7 +522,6 @@ int	main(int argc, char *argv[])
 	vars_init(&main.map, argv[1]);
 	parse_map(&main.map, &main.p_pos);
 	grid_init(&main);
-	return (0);
 	check_walls1(&main.map);
 	check_walls2(&main.map);
 	check_epc(&main.map, &main.p_pos, &main.e_pos);
