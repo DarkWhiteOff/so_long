@@ -1,76 +1,4 @@
-#include "mlx_linux/mlx.h"
-#include "get_next_line/get_next_line.h"
-#include "ft_printf/ft_printf.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-typedef struct s_pxy {
-	int	x;
-	int	y;
-}	t_pxy;
-
-typedef struct s_sprite {
-	int		width;
-	int		height;
-	void	*img;
-}	t_sprite;
-
-typedef struct s_map {
-    char    *path;
-    size_t  height;
-    size_t  width;
-	size_t	Ex;
-	size_t	Pos;
-	size_t	Coll;
-	int		fd;
-	char	**grid;
-	char	**highlight_grid;
-	size_t	exit_acc;
-	size_t	coll_acc;
-	size_t	player_on_exit;
-	size_t	moves;
-	t_pxy		screen_size;
-}	t_map;
-
-typedef struct s_main {
-	void		*mlx_ptr;
-	void		*mlx_win;
-	void		*img;
-	char		*addr;
-	int			bpp;
-	int			line_size;
-	int			endian;
-	t_map		map;
-	t_pxy		p_pos;
-	t_pxy		e_pos;
-	t_sprite	spr_wall;
-	t_sprite	spr_floor;
-	t_sprite	spr_coll1;
-	t_sprite	spr_coll2;
-	t_sprite	spr_floor_coll;
-	t_sprite	spr_door_close;
-	t_sprite	spr_door_open;
-	t_sprite	spr_player_front;
-	t_sprite	spr_player_back;
-	t_sprite	spr_player_side;
-	t_sprite	spr_you_win;
-}	t_main;
-
-void	free_grids(t_map *map)
-{
-	int i;
-
-	i = 0;
-	while (i < map->height)
-    {
-        free(map->grid[i]);
-		free(map->highlight_grid[i]);
-        i++;
-	}
-	free(map->grid);
-	free(map->highlight_grid);
-}
+#include "so_long.h"
 
 int     check_map_name(char *map_name)
 {
@@ -86,8 +14,6 @@ int     check_map_name(char *map_name)
 
 void    vars_init(t_map *map, char *map_path)
 {
-    //char    *line;
-
     map->path = map_path;
     map->height = 0;
     map->width = 0;
@@ -102,20 +28,37 @@ void    vars_init(t_map *map, char *map_path)
 	map->screen_size.y = 0;
 }
 
-size_t  ft_strlenmap(char *line, t_map *map)
+void	checks_inits(t_main *main)
 {
-    int     i;
-
-    i = 0;
-    while (line[i] != '\n' && line[i] != '\0')
-        i++;
-	if (i > map->screen_size.x / 48)
+	get_screen_size(&main->map);
+	parse_map(&main->map, &main->p_pos);
+	grid_init(main);
+	check_walls1(&main->map);
+	check_walls2(&main->map);
+	check_epc(&main->map, &main->p_pos, &main->e_pos);
+	check_path(&main->map, main->p_pos.x, main->p_pos.y);
+	main->map.grid[main->e_pos.y][main->e_pos.x] = '0';
+	if (main->map.exit_acc != 1 || main->map.coll_acc != main->map.Coll)
 	{
-		free(line);
-		exit (ft_printf("Error\nYour map is not rectangular or there's nothing in it.\n"));
+		free_grids(&main->map);
+		exit (ft_printf("Error\nYour map is invalid because the exit or collectibles aren't accessible.\n"));
 	}
-	exit (0);
-    return (i);
+}
+
+void	get_screen_size(t_map *map)
+{
+	void	*mlxptr;
+
+	mlxptr = mlx_init();
+	if (!mlxptr)
+	{
+		free(mlxptr);
+		exit (ft_printf("Error\nMlx failed.\n"));
+	}
+	mlx_get_screen_size(mlxptr, &map->screen_size.x, &map->screen_size.y);
+	ft_printf("Screen size : x->%d, y->%d", map->screen_size.x, map->screen_size.y);
+	mlx_destroy_display(mlxptr);
+	free(mlxptr);
 }
 
 void    parse_map(t_map *map, t_pxy *p_pos)
@@ -158,37 +101,21 @@ void    parse_map(t_map *map, t_pxy *p_pos)
 // ft_printf("map height : %d\n\n", map->height); // à enlever
     if (map->width == map->height || map->width == 0 || map->height == 0 || line_samelen == 1 || map->height > map->screen_size.y / 48)
         exit (ft_printf("Error\nYour map is not rectangular or there's nothing in it.\n"));
-	//exit (0);
 }
 
-void    allocate_grids(t_map *map)
+size_t  ft_strlenmap(char *line, t_map *map)
 {
     int     i;
-    int     j;
 
     i = 0;
-    j = 0;
-    map->grid = (char **)malloc(sizeof(char *) * map->height + 1);
-    map->highlight_grid = (char **)malloc(sizeof(char *) * map->height + 1);
-    while (i < map->height)
-    {
-            map->grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
-            map->highlight_grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
-            i++;
-    }
-    i = 0;
-    while (i < map->height)
-    {
-        while (j < map->width)
-        {
-            map->highlight_grid[i][j] = '0';
-            j++;
-        }
-        map->highlight_grid[i][j] = '\0';
+    while (line[i] != '\n' && line[i] != '\0')
         i++;
-        j = 0;
-    }
-//  map->highlight_grid[i] = NULL;
+	if (i > map->screen_size.x / 48)
+	{
+		free(line);
+		exit (ft_printf("Error\nYour map is not rectangular or there's nothing in it.\n"));
+	}
+    return (i);
 }
 
 void    grid_init(t_main *main)
@@ -224,6 +151,36 @@ void    grid_init(t_main *main)
     }
 //  main->map.grid[i] = NULL;
     close(main->map.fd);
+}
+
+void    allocate_grids(t_map *map)
+{
+    int     i;
+    int     j;
+
+    i = 0;
+    j = 0;
+    map->grid = (char **)malloc(sizeof(char *) * map->height + 1);
+    map->highlight_grid = (char **)malloc(sizeof(char *) * map->height + 1);
+    while (i < map->height)
+    {
+            map->grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
+            map->highlight_grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
+            i++;
+    }
+    i = 0;
+    while (i < map->height)
+    {
+        while (j < map->width)
+        {
+            map->highlight_grid[i][j] = '0';
+            j++;
+        }
+        map->highlight_grid[i][j] = '\0';
+        i++;
+        j = 0;
+    }
+//  map->highlight_grid[i] = NULL;
 }
 
 void    check_walls1(t_map *map)
@@ -330,6 +287,48 @@ void    check_path(t_map *map, size_t x, size_t y)
     return ;
 }
 
+void	render_init(t_main *main)
+{
+	main->mlx_ptr = mlx_init();
+	if (!main->mlx_ptr)
+	{
+		free(main->mlx_ptr);
+		exit (ft_printf("Error\nMlx failed.\n"));
+	}
+	main->mlx_win = mlx_new_window(main->mlx_ptr, main->map.width * 48, main->map.height * 48, "so_long");
+	if (!main->mlx_win)
+	{
+		mlx_destroy_display(main->mlx_ptr);
+		free(main->mlx_ptr);
+		free_grids(&main->map);
+		exit (ft_printf("Error\nMlx failed.\n"));
+	}
+	main->img = mlx_new_image(main->mlx_ptr, main->map.width * 48, main->map.height * 48);
+	if (!main->img)
+	{
+		mlx_destroy_window(main->mlx_ptr, main->mlx_win);
+		mlx_destroy_display(main->mlx_ptr);
+		free(main->mlx_ptr);
+		free_grids(&main->map);
+		exit (ft_printf("Error\nMlx failed.\n"));
+	}
+	main->addr = mlx_get_data_addr(main->img, &main->bpp, &main->line_size, &main->endian);
+}
+
+void	sprites_init(t_main *main)
+{
+	main->spr_wall.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_wall.xpm", &main->spr_wall.width, &main->spr_wall.height);
+	main->spr_floor.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_floor.xpm", &main->spr_floor.width, &main->spr_floor.height);
+	main->spr_floor_coll.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_floor_coll.xpm", &main->spr_floor_coll.width, &main->spr_floor_coll.height);
+	main->spr_door_close.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_door_close.xpm", &main->spr_door_close.width, &main->spr_door_close.height);
+	main->spr_player_front.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_player_front.xpm", &main->spr_player_front.width, &main->spr_player_front.height);
+	if (!main->spr_player_front.img || !main->spr_wall.img || !main->spr_floor.img || !main->spr_floor_coll.img || !main->spr_door_close.img)
+	{
+		free_sprites(main);
+		exit(ft_printf("Error\nFAILED"));
+	}
+}
+
 void	free_sprites(t_main *main)
 {
 	if (!main->mlx_ptr, main->spr_player_front.img)
@@ -349,18 +348,19 @@ void	free_sprites(t_main *main)
 	free_grids(&main->map);
 }
 
-void	sprites_init(t_main *main)
+int     key_manager(int keycode, t_main *main)
 {
-	main->spr_wall.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_wall.xpm", &main->spr_wall.width, &main->spr_wall.height);
-	main->spr_floor.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_floor.xpm", &main->spr_floor.width, &main->spr_floor.height);
-	main->spr_floor_coll.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_floor_coll.xpm", &main->spr_floor_coll.width, &main->spr_floor_coll.height);
-	main->spr_door_close.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_door_close.xpm", &main->spr_door_close.width, &main->spr_door_close.height);
-	main->spr_player_front.img = mlx_xpm_file_to_image(main->mlx_ptr, "sprites_tiles/32x32/spr_player_front.xpm", &main->spr_player_front.width, &main->spr_player_front.height);
-	if (!main->spr_player_front.img || !main->spr_wall.img || !main->spr_floor.img || !main->spr_floor_coll.img || !main->spr_door_close.img)
-	{
-		free_sprites(main);
-		exit(ft_printf("Error\nFAILED"));
-	}
+    if (keycode == 53 || keycode == 65307)
+        close_window(main);
+	if (keycode == 122 || keycode == 65362) // Z
+		update_player_pos(main, 'Z');
+	if (keycode == 113 || keycode == 65361) // Q
+		update_player_pos(main, 'Q');
+	if (keycode == 115 || keycode == 65364) // S
+		update_player_pos(main, 'S');
+	if (keycode == 100 || keycode == 65363) // D
+		update_player_pos(main, 'D');
+    return (0);
 }
 
 int     close_window(t_main *main)
@@ -376,22 +376,6 @@ int     close_window(t_main *main)
 	free(main->mlx_ptr);
 	free_grids(&main->map);
     exit (0);
-}
-
-void    actualise_map_data(t_main *main)
-{
-    int     x;
-    int     y;
-
-    x = main->p_pos.x;
-    y = main->p_pos.y;
-    if (main->map.grid[y][x] == 'C')
-        main->map.Coll--;
-    if (main->map.Coll == 0)
-		main->map.grid[main->e_pos.y][main->e_pos.x] = 'E';
-    main->map.grid[y][x] = 'P';
-	if (main->map.grid[main->e_pos.y][main->e_pos.x] == 'P' && main->map.Coll == 0)
-		main->map.player_on_exit = 1;
 }
 
 void	update_player_pos(t_main *main, char c)
@@ -424,19 +408,26 @@ void	update_player_pos(t_main *main, char c)
 	actualise_map_data(main);
 }
 
-int     key_manager(int keycode, t_main *main)
+void    actualise_map_data(t_main *main)
 {
-    if (keycode == 53 || keycode == 65307)
-        close_window(main);
-	if (keycode == 122 || keycode == 65362) // Z
-		update_player_pos(main, 'Z');
-	if (keycode == 113 || keycode == 65361) // Q
-		update_player_pos(main, 'Q');
-	if (keycode == 115 || keycode == 65364) // S
-		update_player_pos(main, 'S');
-	if (keycode == 100 || keycode == 65363) // D
-		update_player_pos(main, 'D');
-    return (0);
+    int     x;
+    int     y;
+
+    x = main->p_pos.x;
+    y = main->p_pos.y;
+    if (main->map.grid[y][x] == 'C')
+        main->map.Coll--;
+    if (main->map.Coll == 0)
+		main->map.grid[main->e_pos.y][main->e_pos.x] = 'E';
+    main->map.grid[y][x] = 'P';
+	if (main->map.grid[main->e_pos.y][main->e_pos.x] == 'P' && main->map.Coll == 0)
+		main->map.player_on_exit = 1;
+}
+
+int	game_refresh(t_main *main)
+{
+	put_background(main);
+	return (0);
 }
 
 void	put_background(t_main *main)
@@ -484,71 +475,19 @@ void	put_background(t_main *main)
 	}
 }
 
-int	game_refresh(t_main *main)
+void	free_grids(t_map *map)
 {
-	put_background(main);
-	return (0);
-}
+	int i;
 
-void	get_screen_size(t_map *map)
-{
-	void	*mlxptr;
-
-	mlxptr = mlx_init();
-	if (!mlxptr)
-	{
-		free(mlxptr);
-		exit (ft_printf("Error\nMlx failed.\n"));
+	i = 0;
+	while (i < map->height)
+    {
+        free(map->grid[i]);
+		free(map->highlight_grid[i]);
+        i++;
 	}
-	mlx_get_screen_size(mlxptr, &map->screen_size.x, &map->screen_size.y);
-	ft_printf("Screen size : x->%d, y->%d", map->screen_size.x, map->screen_size.y);
-	mlx_destroy_display(mlxptr);
-	free(mlxptr);
-}
-
-void	checks_inits(t_main *main)
-{
-	get_screen_size(&main->map);
-	parse_map(&main->map, &main->p_pos);
-	grid_init(main);
-	check_walls1(&main->map);
-	check_walls2(&main->map);
-	check_epc(&main->map, &main->p_pos, &main->e_pos);
-	check_path(&main->map, main->p_pos.x, main->p_pos.y);
-	main->map.grid[main->e_pos.y][main->e_pos.x] = '0';
-	if (main->map.exit_acc != 1 || main->map.coll_acc != main->map.Coll)
-	{
-		free_grids(&main->map);
-		exit (ft_printf("Error\nYour map is invalid because the exit or collectibles aren't accessible.\n"));
-	}
-}
-
-void	render_init(t_main *main)
-{
-	main->mlx_ptr = mlx_init();
-	if (!main->mlx_ptr)
-	{
-		free(main->mlx_ptr);
-		exit (ft_printf("Error\nMlx failed.\n"));
-	}
-	main->mlx_win = mlx_new_window(main->mlx_ptr, main->map.width * 48, main->map.height * 48, "so_long");
-	if (!main->mlx_win)
-	{
-		mlx_destroy_display(main->mlx_ptr);
-		free(main->mlx_ptr);
-		free_grids(&main->map);
-		exit (ft_printf("Error\nMlx failed.\n"));
-	}
-	main->img = mlx_new_image(main->mlx_ptr, main->map.width * 48, main->map.height * 48);
-	if (!main->img)
-	{
-		mlx_destroy_window(main->mlx_ptr, main->mlx_win);
-		mlx_destroy_display(main->mlx_ptr);
-		free(main->mlx_ptr);
-		free_grids(&main->map);
-		exit (ft_printf("Error\nMlx failed.\n"));
-	}
-	main->addr = mlx_get_data_addr(main->img, &main->bpp, &main->line_size, &main->endian);
+	free(map->grid);
+	free(map->highlight_grid);
 }
 
 int	main(int argc, char *argv[])
