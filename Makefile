@@ -1,6 +1,6 @@
 NAME = so_long
 
-SRC = main.c
+SRC = srcs/so_long.c srcs/so_long_checks1.c srcs/so_long_checks2.c srcs/so_long_player_pos.c srcs/so_long_render.c srcs/so_long_utils.c srcs/so_long_sprites.c
 GNL_SRC = get_next_line/get_next_line.c  get_next_line/get_next_line_utils.c
 PRINTF_SRC = ft_printf/ft_printf.c ft_printf/ft_hex.c ft_printf/ft_ptr.c ft_printf/ft_putcharstr.c ft_printf/ft_itoa.c ft_printf/ft_unsigned_itoa.c
 
