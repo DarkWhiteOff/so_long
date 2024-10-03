@@ -1,5 +1,18 @@
 #include "../includes/so_long.h"
 
+void    is_epc(t_map *map, int i, int j, t_pxy *p_pos)
+{
+    if (map->grid[i][j] == 'E')
+        map->Ex++;
+    if (map->grid[i][j] == 'P')
+    {
+        map->Pos++;
+        save_pos(p_pos, j, i);
+    }
+    if (map->grid[i][j] == 'C')
+        map->Coll++;
+}
+
 void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
 {
     int     i;
@@ -11,16 +24,7 @@ void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
     {
         while (map->grid[i][j] != '\0')
         {
-            if (map->grid[i][j] == 'E')
-                map->Ex++;
-            if (map->grid[i][j] == 'P')
-            {
-                map->Pos++;
-                p_pos->x = j;
-                p_pos->y = i;
-            }
-            if (map->grid[i][j] == 'C')
-                map->Coll++;
+            is_epc(map, i, j, p_pos);
 			if (map->grid[i][j] != 'E' && map->grid[i][j] != 'P' && map->grid[i][j] != 'C' && map->grid[i][j] != '0' && map->grid[i][j] != '1')
 			{
 				free_grids(map);
@@ -101,18 +105,14 @@ void    grid_init(t_main *main)
         while (line[j] && line[j] != '\n')
         {
 			if (line[j] == 'E')
-			{
-				main->e_pos.x = j;
-                main->e_pos.y = i;
-			}
+                save_pos(&main->e_pos, j, i);
 			main->map.grid[i][j] = line[j];
             j++;
         }
-        main->map.grid[i][j] = '\0';
+        main->map.grid[i++][j] = '\0';
         j = 0;
 		free(line);
 		line = get_next_line(main->map.fd, &main->map);
-		i++;
     }
     close(main->map.fd);
 }

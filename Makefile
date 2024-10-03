@@ -13,9 +13,6 @@ FLAGS = -Wall -Wextra -Werror -g -g3
 
 all: $(NAME)
 
-# %.o: %.c
-#	$(CC) $(FLAGS) -I/usr/include -Imlx_linux -c $< -o $@
-
 $(NAME) : $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS)
 	$(CC) $(FLAGS) $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -o $(NAME)
 

@@ -1,7 +1,15 @@
 #include "../includes/so_long.h"
 
+void    save_pos(t_pxy *x_pos, int j, int i)
+{
+    x_pos->x = j;
+    x_pos->y = i;
+}
+
 void    empty_line_check(char *line, int fd)
 {
+    if (line == NULL)
+        exit (ft_printf("Error\nYou entered an empty map !\n"));
     if (line[0] == '\n' || line[0] == '\0')
 	{
 		free(line);

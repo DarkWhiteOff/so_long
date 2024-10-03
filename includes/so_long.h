@@ -4,8 +4,7 @@
 # include "../mlx_linux/mlx.h"
 # include "struct.h"
 
-// So long
-
+// SO_LONG
 void	free_grids(t_map *map);
 int     check_map_name(char *map_name);
 void    vars_init(t_map *map, char *map_path);
@@ -23,15 +22,15 @@ int     close_window(t_main *main);
 void    actualise_map_data(t_main *main);
 void	update_player_pos(t_main *main, char c);
 int     key_manager(int keycode, t_main *main);
-void	put_background(t_main *main);
+void	player_wins(t_main *main);
+void	update_map(t_main *main, int i, int j, int px_w, int px_h);
 int	game_refresh(t_main *main);
 void	get_screen_size(t_map *map);
 void	checks_inits(t_main *main);
 void	render_init(t_main *main);
-//int	main(int argc, char *argv[]);
+void    save_pos(t_pxy *e_pos, int j, int i);
 
-// Get next line
-
+// GET_NEXT_LINE
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
@@ -48,22 +47,18 @@ char				*ft_gen(char *newstr, char const *str,
 						unsigned int s, size_t len);
 size_t				ft_calc(char const *str, unsigned int start, size_t len);
 
-// Ft printf
-
+// FT_PRINTF
 int					ft_printf(const char *str, ...);
 int					get_next_arg(va_list *ap, char c);
-int					ft_putchar(char c);
-int					ft_itoa2(int n);
-char				*ft_itoa(int n);
-int					ft_count(int n);
-char				*ft_min(char *str);
-int					ft_putstr(char *str);
-//pas utilisée
 int					ft_dec_into_hex(unsigned int n, int b);
 void				ft_print_array(char *array, int i);
 char				*ft_fill_hexarray(unsigned int n, char *string,
 						char *array);
 int					ft_get_size_hexarray(unsigned int n);
+int					ft_itoa2(int n);
+char				*ft_itoa(int n);
+char				*ft_min(char *str);
+int					ft_count(int n);
 int					ft_unsigned_itoa2(unsigned int n);
 char				*ft_unsigned_itoa(unsigned int n);
 int					ft_unsigned_count(unsigned int n);
@@ -72,5 +67,6 @@ char				*ft_fill_ptrarray(unsigned long long adress,
 						char *string, char *array);
 int					ft_get_size_ptrarray(unsigned long long adress);
 int					ft_putstr(char *str);
+int					ft_putchar(char c);
 
 #endif
