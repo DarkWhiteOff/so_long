@@ -1,19 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long_player_pos.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamgar <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/04 20:09:22 by zamgar            #+#    #+#             */
+/*   Updated: 2024/10/04 20:09:23 by zamgar           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/so_long.h"
 
-void    actualise_map_data(t_main *main)
+void	actualise_map_data(t_main *main)
 {
-    int     x;
-    int     y;
+	int	x;
+	int	y;
 
-    x = main->p_pos.x;
-    y = main->p_pos.y;
-    if (main->map.grid[y][x] == 'C')
-        main->map.Coll--;
-    if (main->map.Coll == 0)
+	x = main->p_pos.x;
+	y = main->p_pos.y;
+	if (main->map.grid[y][x] == 'C')
+		main->map.Coll--;
+	if (main->map.Coll == 0)
 		main->map.grid[main->e_pos.y][main->e_pos.x] = 'E';
-    main->map.grid[y][x] = 'P';
-	if (main->map.grid[main->e_pos.y][main->e_pos.x] == 'P' && main->map.Coll == 0)
-		main->map.player_on_exit = 1;
+	main->map.grid[y][x] = 'P';
+	if (main->map.grid[main->e_pos.y][main->e_pos.x] == 'P'
+		&& main->map.Coll == 0)
+	main->map.player_on_exit = 1;
 }
 
 void	update_player_pos(t_main *main, char c)

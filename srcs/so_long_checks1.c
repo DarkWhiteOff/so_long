@@ -30,20 +30,20 @@ void    parse_map(t_map *map, t_pxy *p_pos)
 		exit (ft_printf("Error\nfd not working."));
     line = get_next_line(fd, map);
     empty_line_check(line, fd);
-	map->width = ft_strlenmap(line, map);
+	map->w = ft_strlenmap(line, map);
     while (line)
     {
-        if (ft_strlenmap(line, map) != map->width || ft_strlenmap(line, map) > map->screen_size.x / 48)
+        if (ft_strlenmap(line, map) != map->w || ft_strlenmap(line, map) > map->screen_size.x / 48)
             line_samelen = 1;
-        map->height++;
+        map->h++;
 		empty_line_check(line, fd);
 		free(line);
     	line = get_next_line(fd, map);
     }
     close(fd);
-    if (map->width == map->height || map->width == 0 || map->height == 0 || line_samelen == 1)
+    if (map->w == map->h || map->w == 0 || map->h == 0 || line_samelen == 1)
         exit (ft_printf("Error\nYour map is not rectangular or there's nothing in it.\n"));
-    if (map->height > map->screen_size.y / 48)
+    if (map->h > map->screen_size.y / 48)
         exit (ft_printf("Error\nYour screen is too small for this map !"));
 }
 
@@ -52,7 +52,7 @@ void    check_walls1(t_map *map)
     int     i;
 
 	i = 0;
-    while (i < map->width)
+    while (i < map->w)
     {
         if (map->grid[0][i] != '1')
 			{
@@ -62,9 +62,9 @@ void    check_walls1(t_map *map)
         i++;
     }
     i = 0;
-    while (i < map->width)
+    while (i < map->w)
     {
-    	if (map->grid[map->height - 1][i] != '1')
+    	if (map->grid[map->h - 1][i] != '1')
         	{
 				free_grids(map);	
             	exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
@@ -78,14 +78,14 @@ void    check_walls2(t_map *map)
     int     i;
 
     i = 1;
-    while (i < map->height - 1)
+    while (i < map->h - 1)
     {
     	if (map->grid[i][0] != '1')
             {
 				free_grids(map);	
             	exit (ft_printf("Error\nYour map is not fully enclosed !\n"));
 			}
-        if (map->grid[i][map->width - 1] != '1')
+        if (map->grid[i][map->w - 1] != '1')
             {
 				free_grids(map);	
             	exit (ft_printf("Error\nYour map is not fully enclosed !\n"));

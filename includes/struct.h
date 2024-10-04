@@ -13,16 +13,16 @@ typedef struct s_pxy {
 }	t_pxy;
 
 typedef struct s_sprite {
-	int		width;
-	int		height;
+	int		w;
+	int		h;
 	void	*img;
 }	t_sprite;
 
 
 typedef struct s_map {
     char    *path;
-    size_t  height;
-    size_t  width;
+    size_t  h;
+    size_t  w;
 	size_t	Ex;
 	size_t	Pos;
 	size_t	Coll;
@@ -37,21 +37,21 @@ typedef struct s_map {
 }	t_map;
 
 typedef struct s_main {
-	void		*mlx_ptr;
+	void		*mlx_p;
 	void		*mlx_win;
 	void		*img;
 	char		*addr;
-	int			bpp;
-	int			line_size;
-	int			endian;
+	int			b;
+	int			ls;
+	int			end;
 	t_map		map;
 	t_pxy		p_pos;
 	t_pxy		e_pos;
 	t_sprite	spr_wall;
 	t_sprite	spr_floor;
-	t_sprite	spr_floor_coll;
-	t_sprite	spr_door_close;
-	t_sprite	spr_player_front;
+	t_sprite	spr_coll;
+	t_sprite	spr_door;
+	t_sprite	spr_p;
 }	t_main;
 
 #endif

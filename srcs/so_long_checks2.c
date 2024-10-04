@@ -1,41 +1,53 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long_checks2.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamgar <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/04 20:12:52 by zamgar            #+#    #+#             */
+/*   Updated: 2024/10/04 20:19:35 by zamgar           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/so_long.h"
 
-void    is_epc(t_map *map, int i, int j, t_pxy *p_pos)
+void	is_epc(t_map *map, int i, int j, t_pxy *p_pos)
 {
-    if (map->grid[i][j] == 'E')
-        map->Ex++;
-    if (map->grid[i][j] == 'P')
-    {
-        map->Pos++;
-        save_pos(p_pos, j, i);
-    }
-    if (map->grid[i][j] == 'C')
-        map->Coll++;
+	if (map->grid[i][j] == 'E')
+		map->Ex++;
+	if (map->grid[i][j] == 'P')
+	{
+		map->Pos++;
+		save_pos(p_pos, j, i);
+	}
+	if (map->grid[i][j] == 'C')
+		map->Coll++;
 }
 
 void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
 {
-    int     i;
-    int     j;
+	int	i;
+	int	j;
 
 	i = 1;
-    j = 0;
-    while (i < map->height - 1)
-    {
-        while (map->grid[i][j] != '\0')
-        {
-            is_epc(map, i, j, p_pos);
+	j = 0;
+	while (i < map->h - 1)
+	{
+		while (map->grid[i][j] != '\0')
+		{
+			is_epc(map, i, j, p_pos);
 			if (map->grid[i][j] != 'E' && map->grid[i][j] != 'P' && map->grid[i][j] != 'C' && map->grid[i][j] != '0' && map->grid[i][j] != '1')
 			{
 				free_grids(map);
 				exit (ft_printf("Error\nYour map contains an unrecognized character."));
 			}
-            j++;
-        }
-        j = 0;
-        i++;
-    }
-    if (map->Ex != 1 || map->Pos != 1 || map->Coll < 1)
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	if (map->Ex != 1 || map->Pos != 1 || map->Coll < 1)
 	{
 		free_grids(map);
 		exit (ft_printf("Error\nVerify that there are only one Exit, one Position and at least one Collectible!\n"));
@@ -44,7 +56,7 @@ void    check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
 
 void    check_path(t_map *map, size_t x, size_t y)
 {
-    if (map->grid[y][x] == '1' || map->highlight_grid[y][x] == '1' || x < 0 || y < 0 || x > map->width || y > map->height)
+    if (map->grid[y][x] == '1' || map->highlight_grid[y][x] == '1' || x < 0 || y < 0 || x > map->w || y > map->h)
         return ;
     map->highlight_grid[y][x] = '1';
     if (map->grid[y][x] == 'E')
@@ -65,18 +77,18 @@ void    allocate_grids(t_map *map)
 
     i = 0;
     j = 0;
-    map->grid = (char **)malloc(sizeof(char *) * map->height + 1);
-    map->highlight_grid = (char **)malloc(sizeof(char *) * map->height + 1);
-    while (i < map->height)
+    map->grid = (char **)malloc(sizeof(char *) * map->h + 1);
+    map->highlight_grid = (char **)malloc(sizeof(char *) * map->h + 1);
+    while (i < map->h)
     {
-            map->grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
-            map->highlight_grid[i] = (char *)malloc(sizeof(char) * map->width + 1);
+            map->grid[i] = (char *)malloc(sizeof(char) * map->w + 1);
+            map->highlight_grid[i] = (char *)malloc(sizeof(char) * map->w + 1);
             i++;
     }
     i = 0;
-    while (i < map->height)
+    while (i < map->h)
     {
-        while (j < map->width)
+        while (j < map->w)
         {
             map->highlight_grid[i][j] = '0';
             j++;
@@ -100,7 +112,7 @@ void    grid_init(t_main *main)
 		exit (ft_printf("Error\nfd not working."));
     line = get_next_line(main->map.fd, &main->map);
     allocate_grids(&main->map);
-    while (i < main->map.height)
+    while (i < main->map.h)
     {
         while (line[j] && line[j] != '\n')
         {
