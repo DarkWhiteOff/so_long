@@ -32,15 +32,15 @@ void	vars_init(t_map *map, char *map_path)
 	map->path = map_path;
 	map->h = 0;
 	map->w = 0;
-	map->Ex = 0;
-	map->Pos = 0;
-	map->Coll = 0;
+	map->ex = 0;
+	map->pos = 0;
+	map->coll = 0;
 	map->exit_acc = 0;
 	map->coll_acc = 0;
 	map->player_on_exit = 0;
 	map->moves = 0;
-	map->screen_size.x = 0;
-	map->screen_size.y = 0;
+	map->sc_s.x = 0;
+	map->sc_s.y = 0;
 }
 
 void	checks_inits(t_main *main)
@@ -53,7 +53,7 @@ void	checks_inits(t_main *main)
 	check_epc(&main->map, &main->p_pos, &main->e_pos);
 	check_path(&main->map, main->p_pos.x, main->p_pos.y);
 	main->map.grid[main->e_pos.y][main->e_pos.x] = '0';
-	if (main->map.exit_acc != 1 || main->map.coll_acc != main->map.Coll)
+	if (main->map.exit_acc != 1 || main->map.coll_acc != main->map.coll)
 	{
 		free_grids(&main->map);
 		exit (ft_printf("Error\nExit or collectibles aren't accessible.\n"));
@@ -101,7 +101,7 @@ int	main(int argc, char *argv[])
 	checks_inits(&main);
 	render_init(&main);
 	sprites_init(&main);
-	mlx_hook(main.mlx_win, 2, 1L <<0, key_manager, &main);
+	mlx_hook(main.mlx_win, 2, 1L << 0, key_manager, &main);
 	mlx_hook(main.mlx_win, 17, 0, close_window, &main);
 	mlx_loop_hook(main.mlx_p, game_refresh, &main);
 	mlx_loop(main.mlx_p);

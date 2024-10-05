@@ -50,19 +50,19 @@ void	get_screen_size(t_map *map)
 		free(mlxptr);
 		exit (ft_printf("Error\nMlx failed.\n"));
 	}
-	mlx_get_screen_size(mlxptr, &map->screen_size.x, &map->screen_size.y);
+	mlx_get_screen_size(mlxptr, &map->sc_s.x, &map->sc_s.y);
 	mlx_destroy_display(mlxptr);
 	free(mlxptr);
 }
 
-size_t	ft_strlenmap(char *line, t_map *map)
+size_t	strlenmap(char *line, t_map *map)
 {
 	int	i;
 
 	i = 0;
 	while (line[i] != '\n' && line[i] != '\0')
 		i++;
-	if (i > map->screen_size.x / 48)
+	if (i > map->sc_s.x / 48)
 	{
 		free(line);
 		exit (ft_printf("Error\nYour screen is too small for this map !"));

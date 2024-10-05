@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long_checks2.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamgar <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/04 20:12:52 by zamgar            #+#    #+#             */
+/*   Updated: 2024/10/04 20:19:35 by zamgar           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef STRUCT_H
 # define STRUCT_H
 
@@ -7,25 +19,27 @@
 # include <fcntl.h>
 # include <stdarg.h>
 
-typedef struct s_pxy {
+typedef struct s_pxy
+{
 	int	x;
 	int	y;
 }	t_pxy;
 
-typedef struct s_sprite {
+typedef struct s_sprite
+{
 	int		w;
 	int		h;
 	void	*img;
 }	t_sprite;
 
-
-typedef struct s_map {
-    char    *path;
-    size_t  h;
-    size_t  w;
-	size_t	Ex;
-	size_t	Pos;
-	size_t	Coll;
+typedef struct s_map
+{
+	char	*path;
+	size_t	h;
+	size_t	w;
+	size_t	ex;
+	size_t	pos;
+	size_t	coll;
 	int		fd;
 	char	**grid;
 	char	**highlight_grid;
@@ -33,10 +47,11 @@ typedef struct s_map {
 	size_t	coll_acc;
 	size_t	player_on_exit;
 	size_t	moves;
-	t_pxy		screen_size;
+	t_pxy	sc_s;
 }	t_map;
 
-typedef struct s_main {
+typedef struct s_main
+{
 	void		*mlx_p;
 	void		*mlx_win;
 	void		*img;

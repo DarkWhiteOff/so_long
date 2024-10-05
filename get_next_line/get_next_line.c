@@ -64,7 +64,7 @@ char	*prepare_nextline(char	*newLine)
 char	*get_next_line(int fd, t_map *map)
 {
 	char		*buffer;
-	char		*new_line;
+	char		*n_l;
 	static char	*save;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
@@ -76,18 +76,18 @@ char	*get_next_line(int fd, t_map *map)
 	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (buffer == NULL)
 		return (NULL);
-	new_line = read_into_buffer(fd, save, buffer);
+	n_l = read_into_buffer(fd, save, buffer);
 	free(buffer);
-	if (new_line == NULL)
+	if (n_l == NULL)
 	{
 		free(save);
 		save = NULL;
 		return (NULL);
 	}
-	save = prepare_nextline(new_line);
-	if (new_line[0] == '\0' || new_line[0] == '\n' || ft_strlen(new_line) > map->screen_size.x / 48)
+	save = prepare_nextline(n_l);
+	if (n_l[0] == '\0' || n_l[0] == '\n' || ft_strlen(n_l) > map->sc_s.x / 48)
 		free(save);
-	return (new_line);
+	return (n_l);
 }
 
 /*int	main(void)
