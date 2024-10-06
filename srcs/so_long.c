@@ -16,9 +16,9 @@ int	key_manager(int keycode, t_main *main)
 {
 	if (keycode == 53 || keycode == 65307)
 		close_window(main);
-	if (keycode == 119)
+	if (keycode == 122)
 		update_player_pos(main, 'Z');
-	if (keycode == 97)
+	if (keycode == 113)
 		update_player_pos(main, 'Q');
 	if (keycode == 115)
 		update_player_pos(main, 'S');

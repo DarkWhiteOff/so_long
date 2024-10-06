@@ -30,12 +30,14 @@ void	free_grids(t_map *map)
 int	check_map_name(char *map_name)
 {
 	int	i;
+	int slash;
 
 	i = 0;
 	while (map_name[i] != '\0')
 		i++;
 	if (map_name[i - 1] == 'r' && map_name[i - 2] == 'e'
-		&& map_name[i - 3] == 'b' && map_name[i - 4] == '.')
+		&& map_name[i - 3] == 'b' && map_name[i - 4] == '.'
+			&& (map_name[i - 5] != '/' && map_name[i - 5] != 0))
 		return (0);
 	return (1);
 }

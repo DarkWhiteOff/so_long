@@ -8,13 +8,16 @@ OBJS := $(SRC:%.c=%.o)
 GNL_OBJS := $(GNL_SRC:%.c=%.o)
 PRINTF_OBJS := $(PRINTF_SRC:%.c=%.o)
 
+#%.o: %.c
+#	$(CC) -Wall -Wextra -Werror -I/usr/include -Imlx_linux -O3 -c $< -o $@
+
 CC = gcc
 FLAGS = -Wall -Wextra -Werror -g -g3
 
 all: $(NAME)
 
 $(NAME) : $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS)
-	$(CC) $(FLAGS) $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -o $(NAME)
+	$(CC) $(FLAGS) $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
 
 clean:
 	rm -rf $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS)
