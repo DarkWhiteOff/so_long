@@ -37,7 +37,7 @@ void	check_epc(t_map *map, t_pxy *p_pos)
 		while (map->grid[i][j] != '\0')
 		{
 			is_epc(map, i, j, p_pos);
-			if (check_map_limits_epc(map, i, j, 1) == 0)
+			if (check_map_limits_epc(map, i, j) == 0)
 			{
 				free_grids(map);
 				exit (ft_printf("Error\nMap contains unrecognized character."));
@@ -54,9 +54,10 @@ void	check_epc(t_map *map, t_pxy *p_pos)
 	}
 }
 
-void	check_path(t_map *map, size_t x, size_t y)
+void	check_path(t_map *map, int x, int y)
 {
-	if (check_map_limits_epc(map, y, x, 0) == 0)
+	if (map->grid[y][x] == '1' || map->highlight_grid[y][x] == '1'
+		|| x < 0 || y < 0 || x > map->w || y > map->h)
 		return ;
 	map->highlight_grid[y][x] = '1';
 	if (map->grid[y][x] == 'E')
@@ -108,8 +109,7 @@ void	grid_init(t_main *main)
 	i = 0;
 	j = 0;
 	main->map.fd = open(main->map.path, O_RDONLY);
-	if (main->map.fd < 0 || read(main->map.fd, 0, 0) < 0)
-		exit (ft_printf("Error\nfd not working."));
+	check_fd_error(main);
 	line = get_next_line(main->map.fd, &main->map);
 	allocate_grids(&main->map);
 	while (i < main->map.h)

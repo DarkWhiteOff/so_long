@@ -4,7 +4,7 @@ LIBFT_PATH = ./libft/
 LIBFT_NAME = libft.a
 LIBFT_LIB = $(addprefix $(LIBFT_PATH), $(LIBFT_NAME))
 
-SRC = srcs/so_long.c srcs/so_long_checks1.c srcs/so_long_checks2.c srcs/so_long_player_pos.c srcs/so_long_render.c srcs/so_long_utils.c srcs/so_long_sprites.c
+SRC = srcs/so_long.c srcs/so_long_checks1.c srcs/so_long_checks2.c srcs/so_long_player_pos.c srcs/so_long_render.c srcs/so_long_utils.c srcs/so_long_utils2.c srcs/so_long_sprites.c
 
 OBJS := $(SRC:%.c=%.o)
 

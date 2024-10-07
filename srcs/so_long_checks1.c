@@ -12,12 +12,6 @@
 
 #include "../includes/so_long.h"
 
-void	save_pos(t_pxy *x_pos, int j, int i)
-{
-	x_pos->x = j;
-	x_pos->y = i;
-}
-
 void	empty_line_check(char *line, int fd)
 {
 	if (line == NULL)
@@ -104,4 +98,12 @@ void	check_walls2(t_map *map)
 		}
 		i++;
 	}
+}
+
+int	check_map_limits_epc(t_map *map, int y, int x)
+{
+	if (map->grid[y][x] != 'E' && map->grid[y][x] != 'P' && map->grid[y][x]
+		!= 'C' && map->grid[y][x] != '0' && map->grid[y][x] != '1')
+		return (0);
+	return (1);
 }

@@ -12,21 +12,6 @@
 
 #include "../includes/so_long.h"
 
-int	key_manager(int keycode, t_main *main)
-{
-	if (keycode == 53 || keycode == 65307)
-		close_window(main);
-	if (keycode == 119)
-		update_player_pos(main, 'Z');
-	if (keycode == 97)
-		update_player_pos(main, 'Q');
-	if (keycode == 115)
-		update_player_pos(main, 'S');
-	if (keycode == 100)
-		update_player_pos(main, 'D');
-	return (0);
-}
-
 void	vars_init(t_map *map, char *map_path)
 {
 	map->path = map_path;

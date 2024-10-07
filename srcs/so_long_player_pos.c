@@ -12,21 +12,19 @@
 
 #include "../includes/so_long.h"
 
-int	check_map_limits_epc(t_map *map, int y, int x, int check)
+int	key_manager(int keycode, t_main *main)
 {
-	if (check == 0)
-	{
-		if (map->grid[y][x] == '1' || map->highlight_grid[y][x] == '1'
-			|| x < 0 || y < 0 || x > map->w || y > map->h)
-			return (0);
-	}
-	else if (check == 1)
-	{
-		if (map->grid[y][x] != 'E' && map->grid[y][x] != 'P' && map->grid[y][x]
-			!= 'C' && map->grid[y][x] != '0' && map->grid[y][x] != '1')
-			return (0);
-	}
-	return (1);
+	if (keycode == 53 || keycode == 65307)
+		close_window(main);
+	if (keycode == 119)
+		update_player_pos(main, 'Z');
+	if (keycode == 97)
+		update_player_pos(main, 'Q');
+	if (keycode == 115)
+		update_player_pos(main, 'S');
+	if (keycode == 100)
+		update_player_pos(main, 'D');
+	return (0);
 }
 
 void	actualise_map_data(t_main *main)

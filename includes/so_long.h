@@ -27,7 +27,7 @@ void	grid_init(t_main *main);
 void	check_walls1(t_map *map);
 void	check_walls2(t_map *map);
 void	check_epc(t_map *map, t_pxy *p_pos);
-void	check_path(t_map *map, size_t x, size_t y);
+void	check_path(t_map *map, int x, int y);
 void	free_sprites(t_main *main);
 void	sprites_init(t_main *main);
 int		close_window(t_main *main);
@@ -41,7 +41,9 @@ void	get_screen_size(t_map *map);
 void	checks_inits(t_main *main);
 void	render_init(t_main *main);
 void	save_pos(t_pxy *e_pos, int j, int i);
-int		check_map_limits_epc(t_map *map, int y, int x, int check);
+int		check_map_limits_epc(t_map *map, int y, int x);
+void	check_fd_error(t_main *main);
+void    is_epc(t_map *map, int i, int j, t_pxy *p_pos);
 
 // GET_NEXT_LINE
 # ifndef BUFFER_SIZE
