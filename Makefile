@@ -1,28 +1,35 @@
 NAME = so_long
 
+LIBFT_PATH = ./libft/
+LIBFT_NAME = libft.a
+LIBFT_LIB = $(addprefix $(LIBFT_PATH), $(LIBFT_NAME))
+
 SRC = srcs/so_long.c srcs/so_long_checks1.c srcs/so_long_checks2.c srcs/so_long_player_pos.c srcs/so_long_render.c srcs/so_long_utils.c srcs/so_long_sprites.c
-GNL_SRC = get_next_line/get_next_line.c  get_next_line/get_next_line_utils.c
-PRINTF_SRC = ft_printf/ft_printf.c ft_printf/ft_hex.c ft_printf/ft_ptr.c ft_printf/ft_putcharstr.c ft_printf/ft_itoa.c ft_printf/ft_unsigned_itoa.c
 
 OBJS := $(SRC:%.c=%.o)
-GNL_OBJS := $(GNL_SRC:%.c=%.o)
-PRINTF_OBJS := $(PRINTF_SRC:%.c=%.o)
-
-#%.o: %.c
-#	$(CC) -Wall -Wextra -Werror -I/usr/include -Imlx_linux -O3 -c $< -o $@
 
 CC = gcc
 FLAGS = -Wall -Wextra -Werror -g -g3
 
+.c.o:
+	$(CC) $(FLAGS) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -c $< -o $@
+
 all: $(NAME)
 
-$(NAME) : $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS)
-	$(CC) $(FLAGS) $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
+$(LIBFT_LIB):
+	make -sC $(LIBFT_PATH)
+
+$(NAME) : $(LIBFT_LIB) $(OBJS)
+	$(CC) $(FLAGS) $(OBJS) $(LIBFT_LIB) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -o $(NAME)
 
 clean:
-	rm -rf $(OBJS) $(GNL_OBJS) $(PRINTF_OBJS)
+	make clean -sC $(LIBFT_PATH)
+	rm -rf $(OBJS)
 
 fclean: clean
+	make fclean -sC $(LIBFT_PATH)
 	rm -rf $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re

@@ -15,13 +15,9 @@
 int	game_refresh(t_main *main)
 {
 	int	i;
-	int	j;
-	int	px_w;
 	int	px_h;
 
 	i = 0;
-	j = 0;
-	px_w = 0;
 	px_h = 0;
 	while (i < main->map.h)
 	{

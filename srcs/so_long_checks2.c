@@ -25,7 +25,7 @@ void	is_epc(t_map *map, int i, int j, t_pxy *p_pos)
 		map->coll++;
 }
 
-void	check_epc(t_map *map, t_pxy *p_pos, t_pxy *e_pos)
+void	check_epc(t_map *map, t_pxy *p_pos)
 {
 	int	i;
 	int	j;
@@ -118,7 +118,8 @@ void	grid_init(t_main *main)
 		{
 			if (line[j] == 'E')
 				save_pos(&main->e_pos, j, i);
-			main->map.grid[i][j++] = line[j];
+			main->map.grid[i][j] = line[j];
+			j++;
 		}
 		main->map.grid[i++][j] = '\0';
 		j = 0;

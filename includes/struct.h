@@ -35,18 +35,18 @@ typedef struct s_sprite
 typedef struct s_map
 {
 	char	*path;
-	size_t	h;
-	size_t	w;
-	size_t	ex;
-	size_t	pos;
-	size_t	coll;
+	int		h;
+	int		w;
+	int		ex;
+	int		pos;
+	int		coll;
 	int		fd;
 	char	**grid;
 	char	**highlight_grid;
-	size_t	exit_acc;
-	size_t	coll_acc;
-	size_t	player_on_exit;
-	size_t	moves;
+	int		exit_acc;
+	int		coll_acc;
+	int		player_on_exit;
+	int		moves;
 	t_pxy	sc_s;
 }	t_map;
 

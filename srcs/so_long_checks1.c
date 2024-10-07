@@ -30,7 +30,7 @@ void	empty_line_check(char *line, int fd)
 	}
 }
 
-void	parse_map(t_map *map, t_pxy *p_pos)
+void	parse_map(t_map *map)
 {
 	int		fd;
 	char	*l;

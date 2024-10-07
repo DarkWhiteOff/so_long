@@ -16,9 +16,9 @@ int	key_manager(int keycode, t_main *main)
 {
 	if (keycode == 53 || keycode == 65307)
 		close_window(main);
-	if (keycode == 122)
+	if (keycode == 119)
 		update_player_pos(main, 'Z');
-	if (keycode == 113)
+	if (keycode == 97)
 		update_player_pos(main, 'Q');
 	if (keycode == 115)
 		update_player_pos(main, 'S');
@@ -46,11 +46,11 @@ void	vars_init(t_map *map, char *map_path)
 void	checks_inits(t_main *main)
 {
 	get_screen_size(&main->map);
-	parse_map(&main->map, &main->p_pos);
+	parse_map(&main->map);
 	grid_init(main);
 	check_walls1(&main->map);
 	check_walls2(&main->map);
-	check_epc(&main->map, &main->p_pos, &main->e_pos);
+	check_epc(&main->map, &main->p_pos);
 	check_path(&main->map, main->p_pos.x, main->p_pos.y);
 	main->map.grid[main->e_pos.y][main->e_pos.x] = '0';
 	if (main->map.exit_acc != 1 || main->map.coll_acc != main->map.coll)
