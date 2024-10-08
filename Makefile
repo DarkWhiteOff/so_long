@@ -4,15 +4,19 @@ LIBFT_PATH = ./libft/
 LIBFT_NAME = libft.a
 LIBFT_LIB = $(addprefix $(LIBFT_PATH), $(LIBFT_NAME))
 
+MLX_PATH = ./mlx/
+MLX_LIB = $(addprefix $(MLX_PATH), $(MLX_NAME))
+
 SRC = srcs/so_long.c srcs/so_long_checks1.c srcs/so_long_checks2.c srcs/so_long_player_pos.c srcs/so_long_render.c srcs/so_long_utils.c srcs/so_long_utils2.c srcs/so_long_sprites.c
 
 OBJS := $(SRC:%.c=%.o)
 
 CC = gcc
 FLAGS = -Wall -Wextra -Werror -g -g3
+MLX_FLAGS = -Lmlx -lmlx_Linux -Imlx -lXext -lX11
 
 .c.o:
-	$(CC) $(FLAGS) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 
 all: $(NAME)
 
@@ -20,10 +24,12 @@ $(LIBFT_LIB):
 	make -sC $(LIBFT_PATH)
 
 $(NAME) : $(LIBFT_LIB) $(OBJS)
-	$(CC) $(FLAGS) $(OBJS) $(LIBFT_LIB) -Lmlx_linux -lmlx_Linux -Imlx_linux -lXext -lX11 -o $(NAME)
+	make -sC $(MLX_PATH)
+	$(CC) $(FLAGS) $(OBJS) $(LIBFT_LIB) -o $(NAME) -L$(MLX_PATH) $(MLX_FLAGS)
 
 clean:
 	make clean -sC $(LIBFT_PATH)
+	make clean -sC $(MLX_PATH)
 	rm -rf $(OBJS)
 
 fclean: clean

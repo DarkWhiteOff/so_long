@@ -13,7 +13,7 @@
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-# include "../mlx_linux/mlx.h"
+# include "../mlx/mlx.h"
 # include "struct.h"
 
 // SO_LONG
@@ -43,7 +43,7 @@ void	render_init(t_main *main);
 void	save_pos(t_pxy *e_pos, int j, int i);
 int		check_map_limits_epc(t_map *map, int y, int x);
 void	check_fd_error(t_main *main);
-void    is_epc(t_map *map, int i, int j, t_pxy *p_pos);
+void	is_epc(t_map *map, int i, int j, t_pxy *p_pos);
 
 // GET_NEXT_LINE
 # ifndef BUFFER_SIZE

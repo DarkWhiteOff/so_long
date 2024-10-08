@@ -40,7 +40,7 @@ void	check_epc(t_map *map, t_pxy *p_pos)
 			if (check_map_limits_epc(map, i, j) == 0)
 			{
 				free_grids(map);
-				exit (ft_printf("Error\nMap contains unrecognized character."));
+				exit (ft_printf("Error\nMap contains unrecognized character.\n"));
 			}
 			j++;
 		}
